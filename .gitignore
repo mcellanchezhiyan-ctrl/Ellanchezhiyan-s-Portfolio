@@ -32,3 +32,6 @@ desktop.ini
 # Temp
 *.tmp
 *.log
+
+.vercel
+.env*
