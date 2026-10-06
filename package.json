@@ -1,0 +1,13 @@
+{
+  "name": "ellanchezhiyan-portfolio",
+  "version": "1.0.0",
+  "description": "Ellanchezhiyan M C — AI & Data Science Engineer Portfolio",
+  "scripts": {
+    "dev": "npx -y serve -l 3000 .",
+    "start": "npx -y serve -l 3000 .",
+    "serve": "npx -y serve -l 3000 ."
+  },
+  "keywords": ["portfolio", "ai", "data-science"],
+  "author": "Ellanchezhiyan M C",
+  "license": "MIT"
+}

@@ -4,355 +4,869 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ellanchezhiyan M C — AI &amp; Data Science Engineer</title>
-  <meta name="description" content="Ellanchezhiyan M C — AI & Data Science Engineer. Portfolio: projects, skills, experience, certifications and contact." />
+  <meta name="description" content="Ellanchezhiyan M C — AI & Data Science Engineer. Portfolio: projects, skills, experience, certifications and contact for college placements and internship opportunities." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
+  <!-- ===== SARA WELCOME INTRODUCTION OVERLAY ===== -->
+  <div id="saraIntroOverlay" class="sara-intro-overlay" aria-label="SARA Assistant Welcome Sequence">
+    <div class="sara-intro-backdrop"></div>
+    <button id="saraSkipBtn" class="sara-skip-btn" type="button" aria-label="Skip introduction">
+      <span>Skip intro</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
+    </button>
+    
+    <div class="sara-intro-stage">
+      <div class="sara-bot" id="saraBot">
+        <!-- Antenna with glowing cyan orb -->
+        <div class="sara-antenna">
+          <div class="sara-antenna-stem"></div>
+          <div class="sara-antenna-orb"></div>
+        </div>
+
+        <!-- Head & Dark Glossy Visor Screen -->
+        <div class="sara-head">
+          <!-- Circular Ear Accent Lights -->
+          <div class="sara-ear sara-ear-left"></div>
+          <div class="sara-ear sara-ear-right"></div>
+          
+          <!-- Visor Face -->
+          <div class="sara-visor">
+            <div class="sara-eyes-wrap" id="saraEyesWrap">
+              <div class="sara-eye sara-eye-left" id="saraEyeLeft">
+                <svg class="sara-eye-svg" viewBox="0 0 40 24">
+                  <path class="sara-eye-curve" d="M 6 18 Q 20 4 34 18" fill="none" stroke="#38BDF8" stroke-width="5" stroke-linecap="round" />
+                </svg>
+              </div>
+              <div class="sara-eye sara-eye-right" id="saraEyeRight">
+                <svg class="sara-eye-svg" viewBox="0 0 40 24">
+                  <path class="sara-eye-curve" d="M 6 18 Q 20 4 34 18" fill="none" stroke="#38BDF8" stroke-width="5" stroke-linecap="round" />
+                </svg>
+              </div>
+            </div>
+            <!-- Subtle cheerful smile -->
+            <div class="sara-smile">
+              <svg viewBox="0 0 24 10" width="16" height="8">
+                <path d="M 4 2 Q 12 9 20 2" fill="none" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="sara-blush sara-blush-left"></div>
+            <div class="sara-blush sara-blush-right"></div>
+            <div class="sara-visor-glare"></div>
+          </div>
+        </div>
+
+        <!-- Torso Body with SARA Badge -->
+        <div class="sara-body">
+          <div class="sara-chest-badge">
+            <span class="badge-text">SARA</span>
+            <span class="badge-dash"></span>
+          </div>
+        </div>
+
+        <!-- Floating Hands / Arms (Right hand waves) -->
+        <div class="sara-hand sara-hand-left"></div>
+        <div class="sara-hand sara-hand-right sara-waving-hand">
+          <div class="sara-palm-light"></div>
+        </div>
+
+        <!-- Floating Propulsion Glow -->
+        <div class="sara-thruster-glow"></div>
+      </div>
+
+      <!-- Speech Dialogue Bubble -->
+      <div class="sara-speech-bubble" id="saraSpeechBubble" role="status" aria-live="polite">
+        <div class="speech-content">
+          <div class="speech-heading" id="saraSpeechHeading">Hi!</div>
+          <div class="speech-message" id="saraSpeechMessage">I'm SARA, Ellan's assistant.</div>
+        </div>
+        <div class="speech-tail"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SARA STORYTELLER WIDGET ===== -->
+  <div id="saraStoryteller" class="sara-storyteller" aria-live="polite" role="complementary" aria-label="SARA Assistant" hidden>
+    <!-- Speech Bubble (appears above avatar) -->
+    <div class="sara-st-bubble" id="saraStBubble" role="status" aria-atomic="true">
+      <div class="sara-st-bubble-text" id="saraStBubbleText"></div>
+      <button class="sara-st-close" id="saraStClose" aria-label="Close SARA message" type="button">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="sara-st-bubble-tail"></div>
+    </div>
+
+    <!-- SARA Minimized Avatar Button -->
+    <button class="sara-st-avatar" id="saraStAvatar" aria-label="Open SARA assistant" type="button">
+      <!-- Mini head -->
+      <div class="sara-st-head">
+        <!-- Antenna -->
+        <div class="sara-st-antenna">
+          <div class="sara-st-antenna-orb"></div>
+        </div>
+        <!-- Visor with eyes -->
+        <div class="sara-st-visor">
+          <div class="sara-st-eyes">
+            <div class="sara-st-eye" id="saraStEyeL"></div>
+            <div class="sara-st-eye" id="saraStEyeR"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Mini body -->
+      <div class="sara-st-body">
+        <span class="sara-st-badge">S</span>
+      </div>
+      <!-- Status ring -->
+      <div class="sara-st-ring" aria-hidden="true"></div>
+    </button>
+  </div>
+
   <!-- ===== NAVIGATION ===== -->
+
   <header class="nav" id="nav">
     <div class="container nav-inner">
-      <a class="nav-logo" href="#top" aria-label="Home">
+      <a class="nav-logo" href="#top" aria-label="Ellanchezhiyan M C - Home">
         <span class="nav-logo-name">Ellanchezhiyan M C</span>
         <span class="nav-logo-role">AI &amp; Data Science</span>
       </a>
-      <nav class="nav-links" aria-label="Primary">
+      <nav class="nav-links" aria-label="Primary Navigation">
         <a href="#about">About</a>
         <a href="#skills">Skills</a>
         <a href="#projects">Projects</a>
-        <a href="#ai-projects">AI Projects</a>
+        <a href="#ai-projects">AI Systems</a>
         <a href="#experience">Experience</a>
         <a href="#certifications">Certifications</a>
         <a href="#contact">Contact</a>
-        <a class="nav-resume" href="Ellanchezhiyan_MC_Resume.pdf" target="_blank" rel="noopener">Resume</a>
+        <a class="nav-resume btn-resume" href="Ellanchezhiyan_MC_Resume.pdf" target="_blank" rel="noopener">
+          <svg class="icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Resume</span>
+        </a>
       </nav>
-      <button class="nav-toggle" aria-label="Toggle navigation">
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navMobile">
         <span></span><span></span><span></span>
       </button>
     </div>
   </header>
 
-  <div class="nav-mobile" id="navMobile">
+  <!-- Mobile Navigation Drawer -->
+  <div class="nav-mobile" id="navMobile" aria-label="Mobile Navigation">
     <a href="#about">About</a>
     <a href="#skills">Skills</a>
     <a href="#projects">Projects</a>
-    <a href="#ai-projects">AI Projects</a>
+    <a href="#ai-projects">AI Systems</a>
     <a href="#experience">Experience</a>
     <a href="#certifications">Certifications</a>
     <a href="#contact">Contact</a>
-    <a href="Ellanchezhiyan_MC_Resume.pdf" target="_blank" rel="noopener">Resume</a>
+    <a class="nav-mobile-resume" href="Ellanchezhiyan_MC_Resume.pdf" target="_blank" rel="noopener">
+      <svg class="icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span>Download Resume (PDF)</span>
+    </a>
   </div>
 
   <!-- ===== SITE CONTENT ===== -->
   <div class="site-content">
+    <main>
 
-  <!-- ===== HERO ===== -->
-  <section class="hero" id="top">
-    <div class="container">
-      <div class="hero-grid">
-        <div class="hero-content">
-          <div class="hero-eyebrow reveal">Hello, I'm Ellanchezhiyan</div>
-          <h1 class="hero-name reveal">AI &amp; DATA<br>SCIENCE ENGINEER</h1>
-          <p class="hero-role reveal">Building intelligent systems at the intersection of AI, data and technology.</p>
-          <p class="hero-intro reveal">I turn messy, real-world data into something people can act on — offline AI assistants, retrieval systems that reason over documents, and dashboards that make performance visible at a glance.</p>
-          <div class="hero-actions reveal">
-            <a href="#projects" class="btn btn-primary">Explore My Work</a>
-            <a href="#contact" class="btn btn-secondary">Connect With Me</a>
-          </div>
-          <div class="hero-meta reveal">
-            <span class="meta-item">Pollachi, Tamil Nadu</span>
-            <span class="meta-sep">•</span>
-            <span class="meta-item">B.Tech AI &amp; Data Science • 2029</span>
-          </div>
-          <div class="hero-social reveal">
-            <a href="https://github.com/mcellanchezhiyan-ctrl" target="_blank" rel="noopener">GitHub</a>
-            <span class="sep">/</span>
-            <a href="https://www.linkedin.com/in/ellanchezhiyan-mc-b75b14381" target="_blank" rel="noopener">LinkedIn</a>
-            <span class="sep">/</span>
-            <a href="mailto:mcellanchezhiyan@gmail.com">Email</a>
-          </div>
-        </div>
-        <div class="hero-visual reveal">
-          <div class="profile-card">
-            <div class="profile-card-head">
-              <span class="profile-card-title">Profile</span>
-              <span class="availability"><span class="availability-dot"></span> Open to internships</span>
-            </div>
-            <div class="profile-card-body">
-              <div class="profile-row">
-                <span class="profile-label">Location</span>
-                <span class="profile-value">Pollachi, Tamil Nadu</span>
-              </div>
-              <div class="profile-row">
-                <span class="profile-label">Education</span>
-                <span class="profile-value">B.Tech AI &amp; Data Science<span>V.S.B. College of Engineering • 2029</span></span>
-              </div>
-              <div class="profile-row">
-                <span class="profile-label">Focus</span>
-                <span class="profile-value">
-                  <span class="profile-tags" style="margin-top:2px"><span>AI</span><span>NLP</span><span>RAG</span><span>Dashboards</span><span>Data Science</span></span>
+      <!-- ===== HERO ===== -->
+      <section class="hero" id="top">
+        <div class="hero-bg-glow" aria-hidden="true"></div>
+        <div class="container">
+          <div class="hero-grid">
+            
+            <!-- Hero Left: Recruiter-Focused Narrative -->
+            <div class="hero-content">
+              <div class="hero-status-wrap reveal">
+                <span class="status-indicator">
+                  <span class="status-dot"></span>
+                  <span>Available for Internships &amp; Placements</span>
                 </span>
               </div>
-              <div class="profile-row">
-                <span class="profile-label">Contact</span>
-                <span class="profile-value">mcellanchezhiyan@gmail.com<span>+91 97905 67416</span></span>
+              
+              <div class="hero-identity reveal">
+                <span class="hero-name-label">Ellanchezhiyan MC</span>
+                <span class="hero-role-badge">Artificial Intelligence &amp; Data Science</span>
+              </div>
+
+              <h1 class="hero-headline reveal">
+                Building intelligent systems for <span class="gradient-text">real-world problems.</span>
+              </h1>
+
+              <p class="hero-intro reveal">
+                Turning messy, real-world data into reliable, actionable software — from offline AI assistants and retrieval-augmented systems to high-performance analytics dashboards.
+              </p>
+              
+              <div class="hero-actions reveal">
+                <a href="#projects" class="btn btn-primary">
+                  <span>View My Work</span>
+                  <svg class="icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </a>
+                <a href="#contact" class="btn btn-secondary">
+                  <span>Get In Touch</span>
+                </a>
+                <a href="Ellanchezhiyan_MC_Resume.pdf" target="_blank" rel="noopener" class="btn btn-ghost btn-resume-inline">
+                  <svg class="icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <span>Resume</span>
+                </a>
+              </div>
+
+              <div class="hero-meta reveal">
+                <div class="meta-item">
+                  <svg class="icon meta-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  <span>Pollachi, Tamil Nadu</span>
+                </div>
+                <span class="meta-sep" aria-hidden="true">•</span>
+                <div class="meta-item">
+                  <svg class="icon meta-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                  <span>B.Tech AI &amp; Data Science • 2029</span>
+                </div>
+              </div>
+
+              <div class="hero-social reveal">
+                <a href="https://github.com/mcellanchezhiyan-ctrl" target="_blank" rel="noopener" class="social-badge">
+                  <svg class="icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                  <span>GitHub</span>
+                </a>
+                <a href="https://www.linkedin.com/in/ellanchezhiyan-mc-b75b14381" target="_blank" rel="noopener" class="social-badge">
+                  <svg class="icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                  <span>LinkedIn</span>
+                </a>
+                <a href="mailto:mcellanchezhiyan@gmail.com" class="social-badge">
+                  <svg class="icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                  <span>Email</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Hero Right: SARA Interactive Neural Brain Assistant -->
+            <div class="hero-visual reveal" id="heroVisual">
+              <div class="sara-card" id="saraCard">
+                <div class="sara-viewport" id="saraViewport" role="img" aria-label="SARA — Ellan's Personal AI Assistant Neural Brain">
+                  <canvas id="saraCanvas" class="sara-canvas"></canvas>
+                  <div class="sara-fallback" id="saraFallback" aria-hidden="true"></div>
+
+                  <!-- SARA Message Badge -->
+                  <div class="sara-message-wrap" id="saraMessageWrap">
+                    <div class="sara-avatar-dot" aria-hidden="true">
+                      <span class="sara-pulse-ring"></span>
+                      <span class="sara-core-dot"></span>
+                    </div>
+                    <div class="sara-bubble">
+                      <div class="sara-tag">SARA • ASSISTANT</div>
+                      <div class="sara-text" id="saraText">"Hi, I'm Ellan's Assistant."</div>
+                    </div>
+                  </div>
+
+                  <!-- Subtle Interaction Hint -->
+                  <div class="sara-hint">
+                    <span class="hint-dot"></span>
+                    <span class="hint-text">Neural Core • Interactive</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Scroll Cue -->
+          <div class="scroll-hint reveal">
+            <a href="#about" class="scroll-hint-link" aria-label="Scroll down to About section">
+              <span class="scroll-hint-text">Scroll to explore</span>
+              <div class="scroll-hint-mouse">
+                <div class="scroll-hint-wheel"></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== ABOUT ===== -->
+      <section id="about" class="section">
+        <div class="container">
+          <div class="section-header reveal">
+            <span class="section-eyebrow">Background</span>
+            <h2 class="section-title">About Me<span class="accent">.</span></h2>
+            <p class="section-desc">Engineering student focused on turning complex data workflows into reliable software solutions.</p>
+          </div>
+          <div class="about-grid">
+            <div class="card about-card reveal">
+              <div class="about-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              </div>
+              <h3 class="about-heading">Problem Solver &amp; Applied AI Practitioner</h3>
+              <p>I'm an Artificial Intelligence and Data Science undergraduate who likes turning messy, real-world datasets into something people can actually act on. My hands-on work spans data analytics and business intelligence — cleaning and validating data, then building dashboards that make trends visible at a glance — alongside a growing focus on applied AI, including offline assistants, retrieval-augmented systems, and the chatbots and tooling that sit on top of them.</p>
+              <p>I care about the same thing every time: taking a hard, technical problem and shipping something that genuinely works.</p>
+              
+              <div class="about-tags-label">Core Competencies:</div>
+              <div class="about-tags">
+                <span>AI</span>
+                <span>NLP</span>
+                <span>RAG</span>
+                <span>DASHBOARDS</span>
+                <span>DATA SCIENCE</span>
+              </div>
+            </div>
+
+            <div class="about-side">
+              <div class="card fact-card reveal">
+                <div class="fact-icon-wrap">
+                  <svg class="fact-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                </div>
+                <div class="fact-body">
+                  <div class="fact-label">Location</div>
+                  <div class="fact-value">Pollachi, Tamil Nadu</div>
+                </div>
+              </div>
+
+              <div class="card fact-card reveal">
+                <div class="fact-icon-wrap">
+                  <svg class="fact-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                </div>
+                <div class="fact-body">
+                  <div class="fact-label">Degree</div>
+                  <div class="fact-value">B.Tech AI &amp; Data Science</div>
+                  <div class="fact-sub">V.S.B. College of Engineering • 2029</div>
+                </div>
+              </div>
+
+              <div class="card fact-card reveal">
+                <div class="fact-icon-wrap">
+                  <svg class="fact-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                </div>
+                <div class="fact-body">
+                  <div class="fact-label">Primary Interests</div>
+                  <div class="fact-value">AI, NLP, Data Science</div>
+                </div>
+              </div>
+
+              <div class="card fact-card fact-card-edu reveal">
+                <div class="fact-icon-wrap">
+                  <svg class="fact-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                </div>
+                <div class="fact-body fact-body-full">
+                  <div class="fact-label">Academic Record</div>
+                  <div class="edu-list">
+                    <div class="edu-item">
+                      <div class="edu-item-header">
+                        <strong>Higher Secondary — 91%</strong>
+                        <span class="edu-badge">2025</span>
+                      </div>
+                      <span class="edu-school">Shri Vinayagar Matriculation</span>
+                    </div>
+                    <div class="edu-item">
+                      <div class="edu-item-header">
+                        <strong>Secondary (SSLC) — 93%</strong>
+                        <span class="edu-badge">2023</span>
+                      </div>
+                      <span class="edu-school">Shri Vinayagar Matriculation</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="scroll-hint reveal">
-        <span class="scroll-hint-text">Scroll to explore</span>
-        <span class="scroll-hint-line"></span>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- ===== ABOUT ===== -->
-  <section id="about">
-    <div class="container">
-      <div class="section-header reveal">
-        <span class="section-eyebrow">About</span>
-        <h2 class="section-title">About Me<span class="accent">.</span></h2>
-      </div>
-      <div class="about-grid">
-        <div class="card about-card reveal">
-          <p>I'm an Artificial Intelligence and Data Science undergraduate who likes turning messy, real-world datasets into something people can actually act on. My hands-on work spans data analytics and business intelligence — cleaning and validating data, then building dashboards that make trends visible at a glance — alongside a growing focus on applied AI, including offline assistants, retrieval-augmented systems, and the chatbots and tooling that sit on top of them.</p>
-          <p>I care about the same thing every time: taking a hard, technical problem and shipping something that genuinely works.</p>
-          <div class="about-tags">
-            <span>AI</span><span>NLP</span><span>RAG</span><span>DASHBOARDS</span><span>DATA SCIENCE</span>
+      <!-- ===== SKILLS ===== -->
+      <section id="skills" class="section">
+        <div class="container">
+          <div class="section-header reveal">
+            <span class="section-eyebrow">Technical Arsenal</span>
+            <h2 class="section-title">Technical Capabilities<span class="accent">.</span></h2>
+            <p class="section-desc">Practical skills in machine learning workflows, data analytics, programming, and software engineering.</p>
           </div>
-        </div>
-        <div class="about-side">
-          <div class="card fact-card reveal">
-            <div class="fact-label">Location</div>
-            <div class="fact-value">Pollachi, Tamil Nadu</div>
-          </div>
-          <div class="card fact-card reveal">
-            <div class="fact-label">Degree</div>
-            <div class="fact-value">B.Tech AI &amp; Data Science</div>
-            <div class="fact-sub">V.S.B. College of Engineering • 2029</div>
-          </div>
-          <div class="card fact-card reveal">
-            <div class="fact-label">Interests</div>
-            <div class="fact-value">AI, NLP, Data Science</div>
-          </div>
-          <div class="card fact-card reveal">
-            <div class="fact-label">Education</div>
-            <div class="edu-list">
-              <div class="edu-item"><strong>Higher Secondary — 91%</strong><span>Shri Vinayagar Matric • 2025</span></div>
-              <div class="edu-item"><strong>Secondary — 93%</strong><span>Shri Vinayagar Matric • 2023</span></div>
+          <div class="skills-grid">
+            <div class="card skill-card reveal">
+              <div class="skill-card-head">
+                <div class="skill-icon-box">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                </div>
+                <div>
+                  <h3 class="skill-group-title">Languages &amp; Foundations</h3>
+                  <div class="skill-group-desc">Core programming and analytical foundations.</div>
+                </div>
+              </div>
+              <div class="skill-tags">
+                <span>Python</span>
+                <span>Java</span>
+                <span>C</span>
+                <span>Statistical Analysis</span>
+              </div>
+            </div>
+
+            <div class="card skill-card reveal">
+              <div class="skill-card-head">
+                <div class="skill-icon-box">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                </div>
+                <div>
+                  <h3 class="skill-group-title">AI, Data &amp; Analysis</h3>
+                  <div class="skill-group-desc">Applied AI, language models and data workflows.</div>
+                </div>
+              </div>
+              <div class="skill-tags">
+                <span>Pandas</span>
+                <span>NumPy</span>
+                <span>EDA</span>
+                <span>Data Cleaning</span>
+                <span>LLMs</span>
+                <span>RAG</span>
+                <span>NLP</span>
+              </div>
+            </div>
+
+            <div class="card skill-card reveal">
+              <div class="skill-card-head">
+                <div class="skill-icon-box">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                </div>
+                <div>
+                  <h3 class="skill-group-title">Visualization &amp; BI</h3>
+                  <div class="skill-group-desc">Dashboards and communication of insights.</div>
+                </div>
+              </div>
+              <div class="skill-tags">
+                <span>Tableau</span>
+                <span>Power BI</span>
+                <span>Matplotlib</span>
+                <span>Looker Studio</span>
+                <span>Dashboard Design</span>
+                <span>Data Storytelling</span>
+              </div>
+            </div>
+
+            <div class="card skill-card reveal">
+              <div class="skill-card-head">
+                <div class="skill-icon-box">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                </div>
+                <div>
+                  <h3 class="skill-group-title">Tools &amp; Platforms</h3>
+                  <div class="skill-group-desc">Everyday engineering and collaboration tools.</div>
+                </div>
+              </div>
+              <div class="skill-tags">
+                <span>GitHub</span>
+                <span>VS Code</span>
+                <span>Google Colab</span>
+                <span>Excel</span>
+                <span>Google Sheets</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- ===== SKILLS ===== -->
-  <section id="skills">
-    <div class="container">
-      <div class="section-header reveal">
-        <span class="section-eyebrow">Skills</span>
-        <h2 class="section-title">Capabilities<span class="accent">.</span></h2>
-      </div>
-      <div class="skills-grid">
-        <div class="card skill-card reveal">
-          <div class="skill-group-title">Languages &amp; Foundations</div>
-          <div class="skill-group-desc">Core programming and analytical foundations.</div>
-          <div class="skill-tags"><span>Python</span><span>Java</span><span>C</span><span>Statistical Analysis</span></div>
-        </div>
-        <div class="card skill-card reveal">
-          <div class="skill-group-title">AI, Data &amp; Analysis</div>
-          <div class="skill-group-desc">Applied AI, language models and data workflows.</div>
-          <div class="skill-tags"><span>Pandas</span><span>NumPy</span><span>EDA</span><span>Data Cleaning</span><span>LLMs</span><span>RAG</span><span>NLP</span></div>
-        </div>
-        <div class="card skill-card reveal">
-          <div class="skill-group-title">Visualization &amp; BI</div>
-          <div class="skill-group-desc">Dashboards and communication of insights.</div>
-          <div class="skill-tags"><span>Tableau</span><span>Power BI</span><span>Matplotlib</span><span>Looker Studio</span><span>Dashboard Design</span><span>Data Storytelling</span></div>
-        </div>
-        <div class="card skill-card reveal">
-          <div class="skill-group-title">Tools &amp; Platforms</div>
-          <div class="skill-group-desc">Everyday engineering and collaboration tools.</div>
-          <div class="skill-tags"><span>GitHub</span><span>VS Code</span><span>Google Colab</span><span>Excel</span><span>Google Sheets</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== PROJECTS ===== -->
-  <section id="projects">
-    <div class="container">
-      <div class="section-header reveal">
-        <span class="section-eyebrow">Projects</span>
-        <h2 class="section-title">Selected Work<span class="accent">.</span></h2>
-        <p class="section-desc">A selection of dashboards and applied AI systems — each built around real data and real usability.</p>
-      </div>
-      <div class="projects-list">
-
-        <div class="card project-card reveal">
-          <div class="project-media" data-project="codetrack" data-image="public/projects/codetrack/image.png" data-video="public/projects/codetrack/preview.mp4">
-            <img class="project-media-img" src="public/projects/codetrack/image.png" alt="CodeTrack preview" loading="lazy" />
-            <video class="project-media-video" muted loop playsinline preload="none" poster="public/projects/codetrack/image.png"></video>
-            <div class="project-media-overlay"></div>
+      <!-- ===== PROJECTS ===== -->
+      <section id="projects" class="section">
+        <div class="container">
+          <div class="section-header reveal">
+            <span class="section-eyebrow">Data &amp; Engineering</span>
+            <h2 class="section-title">Selected Work<span class="accent">.</span></h2>
+            <p class="section-desc">A selection of dashboards and applied AI systems — each built around real data and real usability.</p>
           </div>
-          <div class="project-info">
-            <span class="project-index">01 — Dashboard</span>
-            <h3>CodeTrack — Student Analytics Dashboard</h3>
-            <p>A dashboard that tracks student coding activity across LeetCode and GitHub automatically, pulling data through usernames and profile links via API keys, then using Python to analyse and visualise performance.</p>
-            <div class="project-stack"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>APIs</span><span>Python</span></div>
-            <a class="project-link" href="https://github.com/mcellanchezhiyan-ctrl" target="_blank" rel="noopener">View Repository →</a>
-          </div>
-        </div>
+          <div class="projects-list">
 
-        <div class="card project-card reveal">
-          <div class="project-media project-media--static">
-            <img class="project-media-img" src="public/projects/nitra/image.png" alt="NITRA — Network Incident Triage Assistant preview" loading="lazy" />
-            <div class="project-media-overlay"></div>
-          </div>
-          <div class="project-info">
-            <span class="project-index">02 — Network AI</span>
-            <h3>NITRA — Network Incident Triage Assistant</h3>
-            <p>Network Incident Triage &amp; Response Assistant for telecom operations. It groups related telemetry alerts into triage clusters, surfaces a likely cause for each incident, and presents affected devices, services and sites with an alert timeline.</p>
-            <div class="project-stack"><span>FastAPI</span><span>Incident Triage</span><span>Alert Correlation</span><span>Network Operations</span></div>
-            <a class="project-link" href="https://github.com/mcellanchezhiyan-ctrl" target="_blank" rel="noopener">View Repository →</a>
+            <!-- Project 01: CodeTrack -->
+            <article class="card project-card reveal">
+              <div class="project-media" data-project="codetrack" data-image="public/projects/codetrack/image.png" data-video="public/projects/codetrack/preview.mp4">
+                <img class="project-media-img" src="public/projects/codetrack/image.png" alt="CodeTrack — Student Analytics Dashboard interface preview" loading="lazy" />
+                <video class="project-media-video" muted loop playsinline preload="none" poster="public/projects/codetrack/image.png"></video>
+                <div class="project-media-overlay"></div>
+              </div>
+              <div class="project-info">
+                <div class="project-header">
+                  <span class="project-index">01 — Dashboard &amp; Analytics</span>
+                </div>
+                <h3 class="project-title">CodeTrack — Student Analytics Dashboard</h3>
+                <p class="project-desc">A dashboard that tracks student coding activity across LeetCode and GitHub automatically, pulling data through usernames and profile links via API keys, then using Python to analyse and visualise performance.</p>
+                <div class="project-stack">
+                  <span>HTML</span>
+                  <span>CSS</span>
+                  <span>JavaScript</span>
+                  <span>APIs</span>
+                  <span>Python</span>
+                </div>
+                <div class="project-actions">
+                  <a class="project-btn" href="https://github.com/mcellanchezhiyan-ctrl" target="_blank" rel="noopener">
+                    <svg class="icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                    <span>View Repository</span>
+                    <svg class="icon arrow-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- Project 02: NITRA -->
+            <article class="card project-card reveal">
+              <div class="project-media project-media--static">
+                <img class="project-media-img" src="public/projects/nitra/image.png" alt="NITRA — Network Incident Triage Assistant preview" loading="lazy" />
+                <div class="project-media-overlay"></div>
+              </div>
+              <div class="project-info">
+                <div class="project-header">
+                  <span class="project-index">02 — Network AI &amp; Backend</span>
+                </div>
+                <h3 class="project-title">NITRA — Network Incident Triage Assistant</h3>
+                <p class="project-desc">Network Incident Triage &amp; Response Assistant for telecom operations. It groups related telemetry alerts into triage clusters, surfaces a likely cause for each incident, and presents affected devices, services and sites with an alert timeline.</p>
+                <div class="project-stack">
+                  <span>FastAPI</span>
+                  <span>Incident Triage</span>
+                  <span>Alert Correlation</span>
+                  <span>Network Operations</span>
+                </div>
+                <div class="project-actions">
+                  <a class="project-btn" href="https://github.com/mcellanchezhiyan-ctrl" target="_blank" rel="noopener">
+                    <svg class="icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                    <span>View Repository</span>
+                    <svg class="icon arrow-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                  </a>
+                </div>
+              </div>
+            </article>
+
           </div>
         </div>
+      </section>
 
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== AI PROJECTS ===== -->
-  <section id="ai-projects">
-    <div class="container">
-      <div class="section-header reveal">
-        <span class="section-eyebrow">AI Projects</span>
-        <h2 class="section-title">AI Projects<span class="accent">.</span></h2>
-      </div>
-      <div class="projects-list">
-
-        <div class="card project-card reveal">
-          <div class="project-media" data-project="alpha" data-image="public/projects/alpha/image.png" data-video="public/projects/alpha/preview.mp4">
-            <img class="project-media-img" src="public/projects/alpha/image.png" alt="ALPHA preview" loading="lazy" />
-            <video class="project-media-video" muted loop playsinline preload="none" poster="public/projects/alpha/image.png"></video>
-            <div class="project-media-overlay"></div>
+      <!-- ===== AI PROJECTS ===== -->
+      <section id="ai-projects" class="section">
+        <div class="container">
+          <div class="section-header reveal">
+            <span class="section-eyebrow">Applied AI &amp; LLMs</span>
+            <h2 class="section-title">AI Projects<span class="accent">.</span></h2>
+            <p class="section-desc">End-to-end intelligent systems leveraging local language models, vector databases, and semantic retrieval.</p>
           </div>
-          <div class="project-info">
-            <span class="project-index">03 — AI Assistant</span>
-            <h3>ALPHA — Hybrid AI Assistant</h3>
-            <p>A personal AI assistant built to work offline via Ollama, with multi-stage message processing for relevance and personalization, deployed as a working website.</p>
-            <div class="project-stack"><span>Python</span><span>LLMs</span><span>NLP</span><span>Local Inference</span></div>
-            <a class="project-link" href="https://github.com/mcellanchezhiyan-ctrl" target="_blank" rel="noopener">View Repository →</a>
+          <div class="projects-list">
+
+            <!-- Project 03: ALPHA -->
+            <article class="card project-card reveal">
+              <div class="project-media" data-project="alpha" data-image="public/projects/alpha/image.png" data-video="public/projects/alpha/preview.mp4">
+                <img class="project-media-img" src="public/projects/alpha/image.png" alt="ALPHA — Hybrid AI Assistant preview" loading="lazy" />
+                <video class="project-media-video" muted loop playsinline preload="none" poster="public/projects/alpha/image.png"></video>
+                <div class="project-media-overlay"></div>
+              </div>
+              <div class="project-info">
+                <div class="project-header">
+                  <span class="project-index">03 — AI Assistant</span>
+                </div>
+                <h3 class="project-title">ALPHA — Hybrid AI Assistant</h3>
+                <p class="project-desc">A personal AI assistant built to work offline via Ollama, with multi-stage message processing for relevance and personalization, deployed as a working website.</p>
+                <div class="project-stack">
+                  <span>Python</span>
+                  <span>LLMs</span>
+                  <span>NLP</span>
+                  <span>Local Inference</span>
+                </div>
+                <div class="project-actions">
+                  <a class="project-btn" href="https://github.com/mcellanchezhiyan-ctrl" target="_blank" rel="noopener">
+                    <svg class="icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                    <span>View Repository</span>
+                    <svg class="icon arrow-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                  </a>
+                </div>
+              </div>
+            </article>
+
+            <!-- Project 04: KnoVault -->
+            <article class="card project-card reveal">
+              <div class="project-media" data-project="knovaul" data-image="public/projects/knovaul/image.png" data-video="public/projects/knovaul/preview.mp4">
+                <img class="project-media-img" src="public/projects/knovaul/image.png" alt="KnoVault — RAG-Based Study Guide preview" loading="lazy" />
+                <video class="project-media-video" muted loop playsinline preload="none" poster="public/projects/knovaul/image.png"></video>
+                <div class="project-media-overlay"></div>
+              </div>
+              <div class="project-info">
+                <div class="project-header">
+                  <span class="project-index">04 — RAG System</span>
+                </div>
+                <h3 class="project-title">KnoVault — RAG-Based Study Guide</h3>
+                <p class="project-desc">Upload PDFs, slides, docs and get direct answers pulled from that material using chunking, vector DB retrieval and an LLM to shape clear, formatted responses.</p>
+                <div class="project-stack">
+                  <span>Python</span>
+                  <span>LLMs</span>
+                  <span>NLP</span>
+                  <span>RAG</span>
+                  <span>Web Development</span>
+                </div>
+                <div class="project-actions">
+                  <a class="project-btn" href="https://github.com/mcellanchezhiyan-ctrl" target="_blank" rel="noopener">
+                    <svg class="icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                    <span>View Repository</span>
+                    <svg class="icon arrow-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                  </a>
+                </div>
+              </div>
+            </article>
+
           </div>
         </div>
+      </section>
 
-        <div class="card project-card reveal">
-          <div class="project-media" data-project="knovaul" data-image="public/projects/knovaul/image.png" data-video="public/projects/knovaul/preview.mp4">
-            <img class="project-media-img" src="public/projects/knovaul/image.png" alt="KnoVault preview" loading="lazy" />
-            <video class="project-media-video" muted loop playsinline preload="none" poster="public/projects/knovaul/image.png"></video>
-            <div class="project-media-overlay"></div>
+      <!-- ===== EXPERIENCE ===== -->
+      <section id="experience" class="section">
+        <div class="container">
+          <div class="section-header reveal">
+            <span class="section-eyebrow">Practical Work</span>
+            <h2 class="section-title">Experience &amp; Internships<span class="accent">.</span></h2>
+            <p class="section-desc">Hands-on industry experience building machine learning applications and data analytics solutions.</p>
           </div>
-          <div class="project-info">
-            <span class="project-index">04 — RAG System</span>
-            <h3>KnoVault — RAG-Based Study Guide</h3>
-            <p>Upload PDFs, slides, docs and get direct answers pulled from that material using chunking, vector DB retrieval and an LLM to shape clear, formatted responses.</p>
-            <div class="project-stack"><span>Python</span><span>LLMs</span><span>NLP</span><span>RAG</span><span>Web Development</span></div>
-            <a class="project-link" href="https://github.com/mcellanchezhiyan-ctrl" target="_blank" rel="noopener">View Repository →</a>
+          <div class="timeline">
+
+            <div class="card timeline-entry reveal">
+              <div class="timeline-header-wrap">
+                <div class="timeline-meta-group">
+                  <span class="timeline-date">Jun 2026</span>
+                  <span class="timeline-badge-type">Internship</span>
+                </div>
+                <div class="timeline-org">Codec Technologies</div>
+              </div>
+              <h3 class="timeline-role">Artificial Intelligence Intern</h3>
+              <ul class="timeline-bullets">
+                <li>Worked hands-on with NLP, RAG, LLMs, and vector databases to implement data retrieval workflows.</li>
+                <li>Built a rule-based AI chatbot for automated customer service handling.</li>
+              </ul>
+            </div>
+
+            <div class="card timeline-entry reveal">
+              <div class="timeline-header-wrap">
+                <div class="timeline-meta-group">
+                  <span class="timeline-date">Jan 2026</span>
+                  <span class="timeline-badge-type">Simulation</span>
+                </div>
+                <div class="timeline-org">Deloitte — Virtual Experience Program (Forage)</div>
+              </div>
+              <h3 class="timeline-role">Data Analyst</h3>
+              <ul class="timeline-bullets">
+                <li>Analysed simulated business datasets to detect underlying patterns, trends, and critical data quality issues.</li>
+                <li>Built an interactive Tableau dashboard to visualise key business metrics and support decision-making.</li>
+              </ul>
+            </div>
+
           </div>
         </div>
+      </section>
 
-      </div>
-    </div>
-  </section>
+      <!-- ===== CERTIFICATIONS ===== -->
+      <section id="certifications" class="section">
+        <div class="container">
+          <div class="section-header reveal">
+            <span class="section-eyebrow">Credentials</span>
+            <h2 class="section-title">Certifications<span class="accent">.</span></h2>
+            <p class="section-desc">Continuous professional learning and certified competencies in AI, Data Science, and Computer Science.</p>
+          </div>
+          <div class="cert-grid">
+            
+            <div class="card cert-card reveal">
+              <div class="cert-icon-wrap">
+                <svg class="cert-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+              </div>
+              <div class="cert-body">
+                <h3 class="cert-name">Data Analytics Job Simulation</h3>
+                <div class="cert-meta">
+                  <span class="cert-provider">Deloitte / Forage</span>
+                  <span class="cert-sep">•</span>
+                  <span class="cert-year">2026</span>
+                </div>
+              </div>
+            </div>
 
-  <!-- ===== EXPERIENCE ===== -->
-  <section id="experience">
-    <div class="container">
-      <div class="section-header reveal">
-        <span class="section-eyebrow">Experience</span>
-        <h2 class="section-title">Experience<span class="accent">.</span></h2>
-      </div>
-      <div class="timeline">
-        <div class="card timeline-entry reveal">
-          <div class="timeline-head"><span class="timeline-date">Jun 2026</span></div>
-          <h3>Artificial Intelligence Intern</h3>
-          <div class="timeline-org">Codec Technologies</div>
-          <ul><li>Worked hands-on with NLP, RAG, LLMs, and vector databases.</li><li>Built a rule-based AI chatbot for customer service.</li></ul>
+            <div class="card cert-card reveal">
+              <div class="cert-icon-wrap">
+                <svg class="cert-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+              </div>
+              <div class="cert-body">
+                <h3 class="cert-name">Basics of NumPy</h3>
+                <div class="cert-meta">
+                  <span class="cert-provider">Infosys Springboard</span>
+                  <span class="cert-sep">•</span>
+                  <span class="cert-year">2026</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card cert-card reveal">
+              <div class="cert-icon-wrap">
+                <svg class="cert-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+              </div>
+              <div class="cert-body">
+                <h3 class="cert-name">The Complete AI Guide</h3>
+                <div class="cert-meta">
+                  <span class="cert-provider">Udemy</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card cert-card reveal">
+              <div class="cert-icon-wrap">
+                <svg class="cert-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+              </div>
+              <div class="cert-body">
+                <h3 class="cert-name">Introduction to Cyber Security</h3>
+                <div class="cert-meta">
+                  <span class="cert-provider">Simplilearn</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card cert-card reveal">
+              <div class="cert-icon-wrap">
+                <svg class="cert-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+              </div>
+              <div class="cert-body">
+                <h3 class="cert-name">Python Foundation Certification</h3>
+                <div class="cert-meta">
+                  <span class="cert-provider">Infosys Springboard</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card cert-card reveal">
+              <div class="cert-icon-wrap">
+                <svg class="cert-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+              </div>
+              <div class="cert-body">
+                <h3 class="cert-name">TCS iON Career Edge — Young Professional</h3>
+                <div class="cert-meta">
+                  <span class="cert-provider">TCS iON</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
-        <div class="card timeline-entry reveal">
-          <div class="timeline-head"><span class="timeline-date">Jan 2026</span></div>
-          <h3>Data Analyst</h3>
-          <div class="timeline-org">Deloitte — Virtual Experience Program (Forage)</div>
-          <ul><li>Analysed simulated business dataset for patterns and data quality issues.</li><li>Built an interactive Tableau dashboard to visualise key metrics.</li></ul>
+      </section>
+
+      <!-- ===== CONTACT ===== -->
+      <section id="contact" class="section">
+        <div class="container">
+          <div class="contact-wrap card reveal">
+            <span class="section-eyebrow">Get in Touch</span>
+            <h2 class="section-title">Let's Connect<span class="accent">.</span></h2>
+            <p class="contact-lead">Open to data analytics and AI internship opportunities, campus placements, and technical discussions. Reach out directly or connect via my profiles below.</p>
+            
+            <div class="contact-grid">
+              <a class="contact-card-item" href="mailto:mcellanchezhiyan@gmail.com" id="emailLink">
+                <div class="contact-card-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                </div>
+                <div class="contact-card-details">
+                  <span class="contact-card-label">Email Address</span>
+                  <span class="contact-card-val">mcellanchezhiyan@gmail.com</span>
+                </div>
+                <button type="button" class="btn-copy" id="copyEmailBtn" aria-label="Copy email address" title="Copy email address">
+                  <svg class="icon copy-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span class="copied-tooltip" id="copyTooltip">Copied!</span>
+                </button>
+              </a>
+
+              <a class="contact-card-item" href="tel:+919790567416">
+                <div class="contact-card-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                </div>
+                <div class="contact-card-details">
+                  <span class="contact-card-label">Phone / WhatsApp</span>
+                  <span class="contact-card-val">+91 97905 67416</span>
+                </div>
+                <div class="contact-arrow">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                </div>
+              </a>
+
+              <a class="contact-card-item" href="https://www.linkedin.com/in/ellanchezhiyan-mc-b75b14381" target="_blank" rel="noopener">
+                <div class="contact-card-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                </div>
+                <div class="contact-card-details">
+                  <span class="contact-card-label">LinkedIn Profile</span>
+                  <span class="contact-card-val">in/ellanchezhiyan-mc-b75b14381</span>
+                </div>
+                <div class="contact-arrow">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                </div>
+              </a>
+
+              <a class="contact-card-item" href="https://github.com/mcellanchezhiyan-ctrl" target="_blank" rel="noopener">
+                <div class="contact-card-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                </div>
+                <div class="contact-card-details">
+                  <span class="contact-card-label">GitHub Profile</span>
+                  <span class="contact-card-val">github.com/mcellanchezhiyan-ctrl</span>
+                </div>
+                <div class="contact-arrow">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                </div>
+              </a>
+            </div>
+
+            <div class="contact-footer-note">
+              <svg class="icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              <span>Languages: <strong>Tamil</strong> (Native) • <strong>English</strong> (Professional Proficiency)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SIGNATURE + NAME (LOCKED section behavior) ===== -->
+      <div class="signature-gap" id="signatureArea" aria-label="Candidate Signature">
+        <div class="container signature-gap-inner">
+          <video id="signatureVideo" class="signature-video" muted playsinline preload="auto" aria-label="Ellanchezhiyan signature drawing">
+            <source src="signature.mp4" type="video/mp4">
+          </video>
+          <div class="signature-name">ELLANCHEZHIYAN M C</div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- ===== CERTIFICATIONS ===== -->
-  <section id="certifications">
-    <div class="container">
-      <div class="section-header reveal">
-        <span class="section-eyebrow">Certifications</span>
-        <h2 class="section-title">Certifications<span class="accent">.</span></h2>
-      </div>
-      <div class="cert-grid reveal">
-        <div class="card cert-card"><div class="cert-name">Data Analytics Job Simulation</div><div class="cert-meta">Deloitte / Forage • 2026</div></div>
-        <div class="card cert-card"><div class="cert-name">Basics of NumPy</div><div class="cert-meta">Infosys Springboard • 2026</div></div>
-        <div class="card cert-card"><div class="cert-name">The Complete AI Guide</div><div class="cert-meta">Udemy</div></div>
-        <div class="card cert-card"><div class="cert-name">Introduction to Cyber Security</div><div class="cert-meta">Simplilearn</div></div>
-        <div class="card cert-card"><div class="cert-name">Python Foundation Certification</div><div class="cert-meta">Infosys Springboard</div></div>
-        <div class="card cert-card"><div class="cert-name">TCS iON Career Edge — Young Professional</div><div class="cert-meta">TCS iON</div></div>
-      </div>
-    </div>
-  </section>
+    </main>
 
-  <!-- ===== CONTACT ===== -->
-  <section id="contact">
-    <div class="container">
-      <div class="contact-wrap card reveal">
-        <span class="section-eyebrow">Contact</span>
-        <h2 class="section-title">Get in Touch<span class="accent">.</span></h2>
-        <p class="contact-lead">Open to data analytics and AI internship opportunities. Reach out directly or find me on the platforms below.</p>
-        <div class="contact-links">
-          <a class="contact-link" href="mailto:mcellanchezhiyan@gmail.com">mcellanchezhiyan@gmail.com</a>
-          <a class="contact-link" href="tel:+919790567416">+91 97905 67416</a>
-          <a class="contact-link" href="https://www.linkedin.com/in/ellanchezhiyan-mc-b75b14381" target="_blank" rel="noopener">LinkedIn</a>
-          <a class="contact-link" href="https://github.com/mcellanchezhiyan-ctrl" target="_blank" rel="noopener">GitHub</a>
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <div class="footer-name">Ellanchezhiyan M C</div>
+            <div class="footer-role">AI &amp; Data Science Engineer</div>
+            <p class="footer-sub">Passionate about building practical data pipelines and applied machine learning tools.</p>
+          </div>
+          <div class="footer-links-group">
+            <div class="footer-nav-links">
+              <a href="#about">About</a>
+              <a href="#skills">Skills</a>
+              <a href="#projects">Projects</a>
+              <a href="#experience">Experience</a>
+              <a href="#contact">Contact</a>
+            </div>
+            <div class="footer-social">
+              <a href="https://github.com/mcellanchezhiyan-ctrl" target="_blank" rel="noopener" aria-label="GitHub Profile">
+                <svg class="icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                <span>GitHub</span>
+              </a>
+              <a href="https://www.linkedin.com/in/ellanchezhiyan-mc-b75b14381" target="_blank" rel="noopener" aria-label="LinkedIn Profile">
+                <svg class="icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                <span>LinkedIn</span>
+              </a>
+              <a href="mailto:mcellanchezhiyan@gmail.com" aria-label="Send email">
+                <svg class="icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <span>Email</span>
+              </a>
+            </div>
+          </div>
         </div>
-        <div class="contact-langs">Tamil — Native • English — Professional Proficiency</div>
+        <div class="footer-copy">
+          <p>© 2026 Ellanchezhiyan M C. All rights reserved.</p>
+          <p class="footer-designed">Designed for campus placements &amp; software/AI recruitment.</p>
+        </div>
       </div>
-    </div>
-  </section>
-
-  <!-- ===== SIGNATURE + NAME (no website background) ===== -->
-  <div class="signature-gap" id="signatureArea" aria-label="Signature area">
-    <div class="container signature-gap-inner">
-      <video id="signatureVideo" class="signature-video" muted playsinline preload="auto" aria-label="Ellanchezhiyan signature drawing">
-        <source src="signature.mp4" type="video/mp4">
-      </video>
-      <div class="signature-name">ELLANCHEZHIYAN M C</div>
-    </div>
-  </div>
-
-  <!-- ===== FOOTER ===== -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand"><div class="footer-name">Ellanchezhiyan M C</div><div class="footer-role">AI &amp; Data Science Engineer</div></div>
-        <div class="footer-social"><a href="https://github.com/mcellanchezhiyan-ctrl" target="_blank" rel="noopener">GitHub</a><a href="https://www.linkedin.com/in/ellanchezhiyan-mc-b75b14381" target="_blank" rel="noopener">LinkedIn</a><a href="mailto:mcellanchezhiyan@gmail.com">Email</a></div>
-      </div>
-      <div class="footer-copy"><p>© 2026 Ellanchezhiyan M C. All rights reserved.</p></div>
-    </div>
-  </footer>
+    </footer>
 
   </div><!-- /site-content -->
 
+  <!-- Three.js Library for high-performance WebGL digital sculpture -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
