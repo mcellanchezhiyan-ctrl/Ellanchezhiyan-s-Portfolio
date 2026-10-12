@@ -922,87 +922,146 @@
 
 
 /* =============================================================================
-   SARA STORYTELLER — PHASE 2
+   SARA STORYTELLER — PHASE 2 (journey-aware)
    Reusable section-aware contextual storyteller widget
    Exposes: window.SARAStoryteller
-   Architecture: IntersectionObserver + session-gated message queue
+   Architecture: IntersectionObserver + section-entry visit state + cooldown
+   - Speaks once per visit; eligible again after leave + meaningful re-entry
+   - No session-wide "already shown" flags; a short cooldown prevents spam
    ============================================================================= */
 (function() {
   "use strict";
 
   /* -------------------------------------------------------------------------
-     CONTENT REGISTRY
-     Maps section IDs / project data-project values → SARA message configs.
-     displayOnce: true  → only fire once per session
-     autoHide: ms       → auto-close bubble after N ms (0 = stays open)
-     delay: ms          → wait before showing (after scroll into view)
+     CONTENT POOLS
+     First-visit messages preserve the original copy. Revisit pools rotate so
+     SARA accompanies the journey instead of repeating herself. All statements
+     stay factual and reuse wording already present in the portfolio.
+     first     → message on the first visit
+     revisits  → rotated on later visits
+     autoHide  → ms before the bubble minimizes itself (0 = stays open)
   --------------------------------------------------------------------------- */
-  var SECTION_SCRIPTS = {
+  var DWELL_SECTION_MS = 800;   // settled time before a section entry counts
+  var DWELL_PROJECT_MS = 700;   // settled time before a project entry counts
+  var COOLDOWN_MS = 6000;       // minimum gap between contextual messages
+
+  var SECTION_POOLS = {
     "top": {
-      message: "Hi again! I'll show you around Ellan's work.",
-      displayOnce: true,
-      autoHide: 5000,
-      delay: 800
+      first: "Hi again! I'll show you around Ellan's work.",
+      revisits: [
+        "Back at the top? The full tour starts with a scroll.",
+        "Ellan's portfolio — take your time looking around."
+      ],
+      autoHide: 5000
     },
     "about": {
-      message: "Let me introduce you to Ellan.\n\nHe's an Artificial Intelligence & Data Science student who enjoys turning ideas into working systems.",
-      displayOnce: true,
-      autoHide: 7000,
-      delay: 400
+      first: "Let me introduce you to Ellan.\n\nHe's an Artificial Intelligence & Data Science student who enjoys turning ideas into working systems.",
+      revisits: [
+        "That's Ellan — an AI & Data Science student turning ideas into working systems.",
+        "Ellan's story in short: messy data in, working software out."
+      ],
+      autoHide: 7000
     },
     "skills": {
-      message: "Here's the toolbox Ellan uses to build his projects.",
-      displayOnce: true,
-      autoHide: 5000,
-      delay: 400
+      first: "Here’s the toolbox behind Ellan’s projects.",
+      revisits: [
+        "Want to see what powers those projects?",
+        "Here’s a closer look at the tools behind the work."
+      ],
+      autoHide: 5000
     },
     "projects": {
-      message: "Let's explore what Ellan has built.",
-      displayOnce: true,
-      autoHide: 5000,
-      delay: 400
+      first: "Let's explore what Ellan has built.",
+      revisits: [
+        "Back to the projects? Let’s see what catches your eye.",
+        "Here’s where Ellan’s ideas become working systems."
+      ],
+      autoHide: 5000
     },
-    "ai-projects": {
-      message: "And here are his applied AI systems — built around real data and real usability.",
-      displayOnce: true,
-      autoHide: 5500,
-      delay: 400
+    "experience": {
+      first: "Hands-on work so far — an AI internship and a data analyst simulation.",
+      revisits: [
+        "Codec Technologies: NLP, RAG and a customer-service chatbot.",
+        "Deloitte simulation: business datasets and a Tableau dashboard."
+      ],
+      autoHide: 6000
+    },
+    "certifications": {
+      first: "Credentials along the way — Deloitte, Infosys Springboard, TCS iON and more.",
+      revisits: [
+        "Python and NumPy foundations via Infosys Springboard.",
+        "Always learning — AI, data and computer science certifications."
+      ],
+      autoHide: 6000
     },
     "contact": {
-      message: "You made it to the end!\nWant to get in touch with Ellan?",
-      displayOnce: true,
-      autoHide: 7000,
-      delay: 400
+      first: "You made it to the end!\nWant to get in touch with Ellan?",
+      revisits: [
+        "Ellan's open to internships and placements — say hello.",
+        "Email, phone, LinkedIn, GitHub — pick whichever suits you."
+      ],
+      autoHide: 7000
     }
   };
 
-  /* Project-card hover scripts (data-project attribute) */
-  var PROJECT_SCRIPTS = {
+  /* Project pools (data-project values and work-item ids).
+     First-visit copy preserves the original greeting + description. */
+  var PROJECT_POOLS = {
     "alpha": {
       greeting: "Oh, you found Alpha!",
       description: "A personal AI assistant built to work offline via Ollama, with multi-stage message processing for relevance and personalization.",
-      displayOnce: true,
+      revisits: [
+        "Alpha again — your offline assistant via Ollama.",
+        "Back to Alpha — multi-stage processing for relevance and personalization."
+      ],
       autoHide: 7000
     },
     "codetrack": {
       greeting: "This is CodeTrack!",
       description: "A dashboard that tracks student coding activity across LeetCode and GitHub automatically.",
-      displayOnce: true,
+      revisits: [
+        "CodeTrack again — LeetCode and GitHub activity, tracked automatically.",
+        "Still CodeTrack — usernames in, performance trends out."
+      ],
+      autoHide: 7000
+    },
+    "nitra": {
+      greeting: "This is NITRA!",
+      description: "A Network Incident Triage & Response Assistant that groups telemetry alerts into triage clusters.",
+      revisits: [
+        "NITRA again — telemetry alerts grouped into triage clusters.",
+        "Back at NITRA — likely causes, affected services and timelines."
+      ],
       autoHide: 7000
     },
     "knovaul": {
       greeting: "Here's KnoVault!",
       description: "Upload PDFs, slides and docs — get direct answers pulled from that material using RAG and an LLM.",
-      displayOnce: true,
+      revisits: [
+        "KnoVault again — answers pulled straight from your uploads.",
+        "Back at KnoVault — chunking, vector retrieval and clear formatted answers."
+      ],
+      autoHide: 7000
+    },
+    "knovault": {
+      greeting: "Here's KnoVault!",
+      description: "Upload PDFs, slides and docs — get direct answers pulled from that material using RAG and an LLM.",
+      revisits: [
+        "KnoVault again — answers pulled straight from your uploads.",
+        "Back at KnoVault — chunking, vector retrieval and clear formatted answers."
+      ],
       autoHide: 7000
     }
   };
 
-  var SESSION_PREFIX = "sara_st_seen_";
-  var STORYTELLER_SHOWN_KEY = "sara_storyteller_active";
-
   /* -------------------------------------------------------------------------
-     WIDGET STATE
+     JOURNEY STATE — section-entry model (no session-wide seen flags)
+     currentSection / previousSection : dominant section right now / before
+     visitId / spokeVisitId           : visit counter + visit already served
+     sectionVisits                    : id -> visit count (first vs revisit copy)
+     currentProject / projectVisitId  : dominant project + its visit counter
+     lastSpokeAt                      : cooldown timestamp between messages
+     scrollDir                        : last scroll direction ('up' | 'down')
   --------------------------------------------------------------------------- */
   var widget = null;
   var bubbleEl = null;
@@ -1012,19 +1071,34 @@
   var eyeL = null;
   var eyeR = null;
 
-  var isUserDismissed = false;  // user explicitly closed bubble this session
+  var isUserDismissed = false;  // user explicitly closed bubble; re-open via avatar
   var currentAutoHideTimer = null;
   var blinkInterval = null;
-  var pendingQueue = [];         // messages waiting while widget is busy
+  var messageQueue = [];        // max 1 explicit message waiting for a free bubble
 
-  /* -------------------------------------------------------------------------
-     SESSION HELPERS
-  --------------------------------------------------------------------------- */
-  function wasSeen(key) {
-    try { return sessionStorage.getItem(SESSION_PREFIX + key) === "1"; } catch(e) { return false; }
+  var journey = {
+    currentSection: null,
+    previousSection: null,
+    visitId: 0,
+    spokeVisitId: -1,
+    sectionVisits: {},
+    currentProject: null,
+    projectVisitId: 0,
+    spokeProjectVisitId: -1,
+    projectVisits: {},
+    lastSpokeAt: -COOLDOWN_MS, // no cooldown before the first message
+    scrollDir: "none",
+    scrollDirAtEntry: "none",
+    lastScrollY: 0
+  };
+
+  function isBubbleOpen() {
+    return !!(bubbleEl && bubbleEl.classList.contains("active"));
   }
-  function markSeen(key) {
-    try { sessionStorage.setItem(SESSION_PREFIX + key, "1"); } catch(e) {}
+
+  function flagUserDismissed() {
+    isUserDismissed = true;
+    if (avatarBtn) avatarBtn.classList.add("has-message");
   }
 
   /* -------------------------------------------------------------------------
@@ -1067,6 +1141,22 @@
     if (avatarBtn) {
       avatarBtn.setAttribute("aria-label", "Open SARA assistant");
     }
+    pumpQueue();
+  }
+
+  /* Deliver one queued explicit message once the bubble is free and the
+     cooldown has elapsed. Contextual triggers never queue — they drop. */
+  function pumpQueue() {
+    if (!messageQueue.length || isBubbleOpen() || isUserDismissed) return;
+    var wait = COOLDOWN_MS - (Date.now() - journey.lastSpokeAt);
+    if (wait > 0) {
+      setTimeout(pumpQueue, wait + 60);
+      return;
+    }
+    var next = messageQueue.shift();
+    showWidget();
+    showBubble(next.message, next.autoHide);
+    journey.lastSpokeAt = Date.now();
   }
 
   /* -------------------------------------------------------------------------
@@ -1083,93 +1173,266 @@
   }
 
   /* -------------------------------------------------------------------------
-     PUBLIC API: SARAStoryteller.say(config)
-     config = { message, displayOnce, key, autoHide, delay }
+     SPEAK PIPELINE: requestSpeak → cooldown/busy gates → bubble
+     - While a message is showing, contextual triggers are dropped (never
+       replaced mid-speech); explicit say() calls wait as a single queued item.
+     - Inside the cooldown window, contextual triggers get a bounded retry
+       that only fires if the same visit is still current — otherwise dropped.
+     ticket: { alive(), retries, explicit, onShown }
   --------------------------------------------------------------------------- */
-  function say(config) {
-    if (!config || !config.message) return;
-    var key = config.key || config.message.slice(0, 20);
-
-    if (config.displayOnce && wasSeen(key)) return;
+  function requestSpeak(message, autoHide, ticket) {
+    ticket = ticket || {};
+    if (!message) return false;
     if (isUserDismissed) {
-      // Show notification dot but don't open automatically
       if (avatarBtn) avatarBtn.classList.add("has-message");
-      return;
+      return false;
     }
-
-    var delay = config.delay || 0;
-    setTimeout(function() {
-      showWidget();
-      showBubble(config.message, config.autoHide != null ? config.autoHide : 5500);
-      if (config.displayOnce) markSeen(key);
-    }, delay);
+    if (isBubbleOpen()) {
+      if (ticket.explicit) {
+        messageQueue.length = 0;
+        messageQueue.push({ message: message, autoHide: autoHide });
+      }
+      return false;
+    }
+    var wait = COOLDOWN_MS - (Date.now() - journey.lastSpokeAt);
+    if (wait > 0) {
+      if (ticket.explicit) {
+        messageQueue.length = 0;
+        messageQueue.push({ message: message, autoHide: autoHide });
+        setTimeout(pumpQueue, wait + 60);
+        return false;
+      }
+      if (ticket.retries > 0 && ticket.alive && ticket.alive()) {
+        ticket.retries -= 1;
+        setTimeout(function() {
+          if (ticket.alive && ticket.alive()) requestSpeak(message, autoHide, ticket);
+        }, wait + 60);
+      }
+      return false;
+    }
+    showWidget();
+    showBubble(message, autoHide != null ? autoHide : 5500);
+    journey.lastSpokeAt = Date.now();
+    if (ticket.onShown) ticket.onShown();
+    return true;
   }
 
   /* -------------------------------------------------------------------------
-     SECTION INTERSECTION OBSERVER
+     PUBLIC API: SARAStoryteller.say(config)
+     config = { message, autoHide, delay, force }
+     Explicit calls jump the visit logic but still respect busy/cooldown
+     (they queue once instead of interrupting). force bypasses the cooldown.
   --------------------------------------------------------------------------- */
+  function say(config) {
+    if (!config || !config.message) return;
+    if (config.force) {
+      journey.lastSpokeAt = 0;
+      messageQueue.length = 0;
+    }
+    var delay = config.delay || 0;
+    setTimeout(function() {
+      requestSpeak(config.message, config.autoHide != null ? config.autoHide : 5500, { explicit: true, retries: 0 });
+    }, delay);
+  }
+
+  function pickSectionMessage(id, visitCount) {
+    var pool = SECTION_POOLS[id];
+    if (!pool) return null;
+    if (visitCount <= 1 || !pool.revisits || !pool.revisits.length) return pool.first;
+    return pool.revisits[(visitCount - 2) % pool.revisits.length];
+  }
+
+  function pickProjectMessage(key, visitCount) {
+    var pool = PROJECT_POOLS[key];
+    if (!pool) return null;
+    if (visitCount > 1 && pool.revisits && pool.revisits.length) {
+      return pool.revisits[(visitCount - 2) % pool.revisits.length];
+    }
+    if (pool.first) return pool.first;
+    return pool.greeting + "\n\n" + pool.description;
+  }
+
+  /* -------------------------------------------------------------------------
+     SECTION-ENTRY TRACKING
+     The dominant section (highest visible ratio above threshold) is the
+     active one. A change of active section starts a new visit; SARA speaks
+     only after the visitor settles (dwell) — scrolling straight through a
+     section stays quiet. Hysteresis guards against boundary jitter.
+  --------------------------------------------------------------------------- */
+  var sectionRatios = {};
+
+  function recomputeActiveSection() {
+    var best = null;
+    var bestRatio = 0;
+    Object.keys(sectionRatios).forEach(function(id) {
+      if (sectionRatios[id] > bestRatio) {
+        bestRatio = sectionRatios[id];
+        best = id;
+      }
+    });
+    if (!best || bestRatio < 0.2) return; // no clear active section
+    if (best === journey.currentSection) return;
+    if (journey.currentSection) {
+      var curRatio = sectionRatios[journey.currentSection] || 0;
+      if (curRatio >= 0.2 && (bestRatio - curRatio) < 0.12) return; // jitter guard
+    }
+    enterSection(best);
+  }
+
+  function enterSection(id) {
+    journey.previousSection = journey.currentSection;
+    journey.currentSection = id;
+    journey.visitId += 1;
+    journey.spokeVisitId = -1; // new visit → eligible again
+    journey.sectionVisits[id] = (journey.sectionVisits[id] || 0) + 1;
+    journey.scrollDirAtEntry = journey.scrollDir;
+    var myVisit = journey.visitId;
+    var visitCount = journey.sectionVisits[id];
+    var message = pickSectionMessage(id, visitCount);
+    if (!message) return;
+    var pool = SECTION_POOLS[id];
+    setTimeout(function() {
+      if (journey.visitId !== myVisit) return;      // visitor moved on
+      if (journey.currentSection !== id) return;     // left meanwhile
+      if (journey.spokeVisitId === myVisit) return;  // already spoke
+      requestSpeak(message, pool ? pool.autoHide : 5500, {
+        retries: 2,
+        alive: function() {
+          return journey.visitId === myVisit && journey.currentSection === id;
+        },
+        onShown: function() { journey.spokeVisitId = myVisit; }
+      });
+    }, DWELL_SECTION_MS);
+  }
+
   function initSectionObserver() {
     if (!("IntersectionObserver" in window)) return;
 
     var observer = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
-        if (!entry.isIntersecting) return;
         var id = entry.target.id;
-        var script = SECTION_SCRIPTS[id];
-        if (!script) return;
-
-        say({
-          message: script.message,
-          displayOnce: script.displayOnce !== false,
-          key: "section_" + id,
-          autoHide: script.autoHide != null ? script.autoHide : 5500,
-          delay: script.delay || 0
-        });
+        if (!SECTION_POOLS[id]) return;
+        sectionRatios[id] = entry.isIntersecting ? (entry.intersectionRatio || 0) : 0;
       });
+      recomputeActiveSection();
     }, {
-      threshold: 0.25,
+      threshold: [0, 0.2, 0.4, 0.6, 0.8],
       rootMargin: "0px 0px -10% 0px"
     });
 
-    Object.keys(SECTION_SCRIPTS).forEach(function(id) {
+    Object.keys(SECTION_POOLS).forEach(function(id) {
       var el = document.getElementById(id);
-      if (el) observer.observe(el);
+      // Skip zero-height anchors (e.g. legacy #ai-projects marker): they can
+      // never be "meaningfully entered".
+      if (el && el.offsetHeight > 40) observer.observe(el);
     });
   }
 
   /* -------------------------------------------------------------------------
-     PROJECT CARD HOVER LISTENERS
+     PROJECT-ENTRY TRACKING (viewport-based, same on mobile — no hover)
+     A project counts as entered when it becomes dominant (ratio >= 0.55)
+     and stays settled through the dwell. Scrolling within the same project
+     stays quiet; leaving (another project dominates, or none does) ends the
+     visit so a later return may speak again.
   --------------------------------------------------------------------------- */
-  function initProjectHovers() {
-    var cards = document.querySelectorAll("[data-project]");
-    cards.forEach(function(card) {
-      var projectId = card.getAttribute("data-project");
-      var script = PROJECT_SCRIPTS[projectId];
-      if (!script) return;
+  var projectRatios = {};
+  var projectEls = {};
 
-      card.addEventListener("mouseenter", function() {
-        if (wasSeen("project_" + projectId)) return;
-        say({
-          message: script.greeting + "\n\n" + script.description,
-          displayOnce: script.displayOnce !== false,
-          key: "project_" + projectId,
-          autoHide: script.autoHide != null ? script.autoHide : 7000,
-          delay: 300
-        });
-      });
-
-      // Touch support
-      card.addEventListener("touchstart", function() {
-        if (wasSeen("project_" + projectId)) return;
-        say({
-          message: script.greeting + "\n\n" + script.description,
-          displayOnce: script.displayOnce !== false,
-          key: "project_" + projectId,
-          autoHide: script.autoHide != null ? script.autoHide : 7000,
-          delay: 300
-        });
-      }, { passive: true });
+  function recomputeActiveProject() {
+    var best = null;
+    var bestRatio = 0;
+    Object.keys(projectRatios).forEach(function(key) {
+      if (projectRatios[key] > bestRatio) {
+        bestRatio = projectRatios[key];
+        best = key;
+      }
     });
+    var next = (best && bestRatio >= 0.55) ? best : null;
+    if (next === journey.currentProject) return;
+    if (next && journey.currentProject) {
+      var curRatio = projectRatios[journey.currentProject] || 0;
+      if (curRatio >= 0.55 && (bestRatio - curRatio) < 0.12) return; // jitter guard
+    }
+    enterProject(next);
+  }
+
+  function projectKeyFor(el) {
+    return el.id || el.getAttribute("data-project");
+  }
+
+  function enterProject(key) {
+    journey.currentProject = key;
+    if (!key) return; // scrolled away from every project — visit ends here
+    journey.projectVisitId += 1;
+    journey.spokeProjectVisitId = -1; // new visit → eligible again
+    journey.projectVisits[key] = (journey.projectVisits[key] || 0) + 1;
+    var myVisit = journey.projectVisitId;
+    var visitCount = journey.projectVisits[key];
+    var lookup = key;
+    if (!PROJECT_POOLS[lookup]) {
+      var el = projectEls[key];
+      lookup = el ? el.getAttribute("data-project") : null;
+    }
+    var message = lookup ? pickProjectMessage(lookup, visitCount) : null;
+    if (!message) return;
+    var pool = PROJECT_POOLS[lookup];
+    setTimeout(function() {
+      if (journey.projectVisitId !== myVisit) return;   // moved on
+      if (journey.currentProject !== key) return;        // left meanwhile
+      if (journey.spokeProjectVisitId === myVisit) return;
+      requestSpeak(message, pool ? pool.autoHide : 7000, {
+        retries: 2,
+        alive: function() {
+          return journey.projectVisitId === myVisit && journey.currentProject === key;
+        },
+        onShown: function() {
+          journey.spokeProjectVisitId = myVisit;
+          // A project message consumes this section visit's turn so SARA
+          // doesn't double-speak when deep-linking straight into a project.
+          journey.spokeVisitId = journey.visitId;
+        }
+      });
+    }, DWELL_PROJECT_MS);
+  }
+
+  function initProjectObserver() {
+    if (!("IntersectionObserver" in window)) return;
+    var items = document.querySelectorAll(".work-item[id]");
+    if (!items.length) return;
+
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        var key = projectKeyFor(entry.target);
+        projectEls[key] = entry.target;
+        projectRatios[key] = entry.isIntersecting ? (entry.intersectionRatio || 0) : 0;
+      });
+      recomputeActiveProject();
+    }, {
+      threshold: [0, 0.35, 0.55, 0.75],
+      rootMargin: "0px 0px -5% 0px"
+    });
+
+    items.forEach(function(item) {
+      var key = projectKeyFor(item);
+      projectEls[key] = item;
+      projectRatios[key] = 0;
+      observer.observe(item);
+    });
+  }
+
+  /* -------------------------------------------------------------------------
+     SCROLL DIRECTION — recorded on every entry; reversals naturally create
+     new visits through the observers above.
+  --------------------------------------------------------------------------- */
+  function initScrollDirection() {
+    try { journey.lastScrollY = window.scrollY || 0; } catch (e) { journey.lastScrollY = 0; }
+    window.addEventListener("scroll", function() {
+      var y = 0;
+      try { y = window.scrollY || 0; } catch (e) {}
+      if (y > journey.lastScrollY + 2) journey.scrollDir = "down";
+      else if (y < journey.lastScrollY - 2) journey.scrollDir = "up";
+      journey.lastScrollY = y;
+    }, { passive: true });
   }
 
   /* -------------------------------------------------------------------------
@@ -1181,9 +1444,7 @@
       closeBtn.addEventListener("click", function(e) {
         e.stopPropagation();
         hideBubble();
-        isUserDismissed = true;
-        // Show notification dot so user knows SARA can still be opened
-        if (avatarBtn) avatarBtn.classList.add("has-message");
+        flagUserDismissed();
       });
     }
 
@@ -1192,7 +1453,7 @@
       avatarBtn.addEventListener("click", function() {
         if (bubbleEl && bubbleEl.classList.contains("active")) {
           hideBubble();
-          isUserDismissed = true;
+          flagUserDismissed();
         } else {
           isUserDismissed = false;
           avatarBtn.classList.remove("has-message");
@@ -1230,8 +1491,9 @@
     try { prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(e) {}
 
     initControls();
+    initScrollDirection();
     initSectionObserver();
-    initProjectHovers();
+    initProjectObserver();
 
     // Show widget right away (hidden until first message or intro done)
     showWidget();
@@ -1241,11 +1503,43 @@
       say: say,
       hide: hideBubble,
       show: showWidget,
-      addSection: function(id, config) { SECTION_SCRIPTS[id] = config; },
-      addProject: function(id, config) { PROJECT_SCRIPTS[id] = config; },
-      reset: function(key) {
-        try { sessionStorage.removeItem(SESSION_PREFIX + key); } catch(e) {}
-      }
+      addSection: function(id, config) {
+        if (!config) return;
+        SECTION_POOLS[id] = {
+          first: config.first || config.message,
+          revisits: config.revisits || [],
+          autoHide: config.autoHide != null ? config.autoHide : 5500
+        };
+        var el = document.getElementById(id);
+        if (el && el.offsetHeight > 40 && sectionRatios[id] === undefined) {
+          sectionRatios[id] = 0;
+        }
+      },
+      addProject: function(id, config) {
+        if (!config) return;
+        PROJECT_POOLS[id] = {
+          greeting: config.greeting,
+          description: config.description,
+          first: config.first,
+          revisits: config.revisits || [],
+          autoHide: config.autoHide != null ? config.autoHide : 7000
+        };
+      },
+      reset: function() {
+        // Fresh tour: forget visit counts and cooldown, keep pools intact.
+        journey.visitId += 1;
+        journey.projectVisitId += 1;
+        journey.currentSection = null;
+        journey.previousSection = null;
+        journey.spokeVisitId = -1;
+        journey.sectionVisits = {};
+        journey.currentProject = null;
+        journey.spokeProjectVisitId = -1;
+        journey.projectVisits = {};
+        journey.lastSpokeAt = Date.now() - COOLDOWN_MS;
+        messageQueue.length = 0;
+      },
+      _journey: journey // inspectable state for debugging/tests
     };
   }
 
@@ -1290,6 +1584,204 @@
     boot();
   }
 
+})();
+
+/* =============================================================================
+   SELECTED WORK + TOOLBOX INTERACTIONS
+   - Project index: smooth focus + active state from viewport
+   - Subtle image movement on scroll (object-position, no transform conflicts)
+   - Skill explorer: technology → contextual panel → project links
+   Respects prefers-reduced-motion. No new libraries.
+   ============================================================================= */
+(function () {
+  "use strict";
+
+  var reducedMotion = false;
+  try { reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+  var isTouch = "ontouchstart" in window || (window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+
+  function init() {
+    initWorkIndex();
+    initWorkParallax();
+    initSkillExplorer();
+  }
+
+  /* ---------- Project index: active state + smooth focus ---------- */
+  function initWorkIndex() {
+    var items = document.querySelectorAll(".work-item[id]");
+    var links = document.querySelectorAll("[data-work-link]");
+    if (!items.length || !links.length) return;
+
+    links.forEach(function (link) {
+      link.addEventListener("click", function (e) {
+        var target = document.getElementById(link.getAttribute("data-work-link"));
+        if (!target) return;
+        e.preventDefault();
+        target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
+        try { target.setAttribute("tabindex", "-1"); target.focus({ preventScroll: true }); } catch (err) {}
+      });
+    });
+
+    if (!("IntersectionObserver" in window)) {
+      links[0].classList.add("active");
+      return;
+    }
+
+    var linkById = {};
+    links.forEach(function (link) { linkById[link.getAttribute("data-work-link")] = link; });
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var id = entry.target.id;
+        links.forEach(function (l) { l.classList.remove("active"); });
+        if (linkById[id]) linkById[id].classList.add("active");
+      });
+    }, { threshold: 0.3, rootMargin: "-20% 0px -55% 0px" });
+
+    items.forEach(function (item) { observer.observe(item); });
+  }
+
+  /* ---------- Subtle image movement on scroll ---------- */
+  function initWorkParallax() {
+    if (reducedMotion || isTouch) return;
+    var visuals = document.querySelectorAll(".work-visual .project-media-img");
+    if (!visuals.length || !("IntersectionObserver" in window)) return;
+
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var vh = window.innerHeight || 800;
+      visuals.forEach(function (img) {
+        var rect = img.getBoundingClientRect();
+        if (rect.bottom < -100 || rect.top > vh + 100) return;
+        var center = rect.top + rect.height / 2;
+        var progress = (center - vh / 2) / (vh / 2); // -1 .. 1
+        progress = Math.max(-1, Math.min(1, progress));
+        img.style.objectPosition = "50% " + (50 + progress * 10).toFixed(2) + "%";
+      });
+    }
+    function requestUpdate() {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate, { passive: true });
+    update();
+  }
+
+  /* ---------- Skill explorer: technology → projects ---------- */
+  function initSkillExplorer() {
+    var chips = document.querySelectorAll(".tool-chip[data-skill]");
+    var groups = document.querySelector(".toolbox-groups");
+    var techEl = document.getElementById("skillPanelTech");
+    var useEl = document.getElementById("skillPanelUse");
+    if (!chips.length || !techEl || !useEl) return;
+
+    var usedWrap = document.getElementById("skillPanelUsedWrap");
+    var usedBox = document.getElementById("skillPanelUsed");
+    var relatedWrap = document.getElementById("skillPanelRelatedWrap");
+    var relatedBox = document.getElementById("skillPanelRelated");
+
+    var projectTitles = {};
+    document.querySelectorAll(".work-item[id]").forEach(function (item) {
+      var title = item.querySelector(".work-title");
+      projectTitles[item.id] = title ? title.textContent.trim() : item.id;
+    });
+
+    function projectLink(id) {
+      var a = document.createElement("a");
+      a.className = "toolbox-link";
+      a.href = "#" + id;
+      a.setAttribute("data-jump", id);
+      var short = (projectTitles[id] || id).split("—")[0].trim();
+      a.innerHTML = "";
+      var label = document.createElement("span");
+      label.textContent = "→ " + short;
+      a.appendChild(label);
+      a.addEventListener("click", function (e) {
+        var target = document.getElementById(id);
+        if (!target) return;
+        e.preventDefault();
+        target.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
+        if (!reducedMotion) {
+          target.classList.remove("flash-focus");
+          void target.offsetWidth;
+          target.classList.add("flash-focus");
+          setTimeout(function () { target.classList.remove("flash-focus"); }, 1700);
+        }
+      });
+      return a;
+    }
+
+    function select(chip) {
+      var skill = chip.getAttribute("data-skill");
+      var use = chip.getAttribute("data-use") || "";
+      var usedIds = (chip.getAttribute("data-used-in") || "").split(/\s+/).filter(Boolean);
+      var relatedIds = (chip.getAttribute("data-related") || "").split(/\s+/).filter(Boolean);
+
+      chips.forEach(function (c) { c.classList.remove("active", "related-match"); });
+      chip.classList.add("active");
+
+      // Dim unrelated: highlight chips sharing any project with this one
+      if (groups) {
+        groups.classList.add("has-selection");
+        var myProjects = {};
+        usedIds.concat(relatedIds).forEach(function (id) { myProjects[id] = true; });
+        chips.forEach(function (c) {
+          if (c === chip) return;
+          var cUsed = (c.getAttribute("data-used-in") || "").split(/\s+/).filter(Boolean);
+          var cRel = (c.getAttribute("data-related") || "").split(/\s+/).filter(Boolean);
+          var shares = cUsed.concat(cRel).some(function (id) { return myProjects[id]; });
+          if (shares) c.classList.add("related-match");
+        });
+      }
+
+      techEl.textContent = skill;
+      useEl.textContent = use;
+
+      if (usedBox && usedWrap) {
+        usedBox.innerHTML = "";
+        if (usedIds.length) {
+          usedIds.forEach(function (id) {
+            if (document.getElementById(id)) usedBox.appendChild(projectLink(id));
+          });
+          usedWrap.hidden = !usedBox.children.length;
+        } else {
+          usedWrap.hidden = true;
+        }
+      }
+
+      if (relatedBox && relatedWrap) {
+        relatedBox.innerHTML = "";
+        if (relatedIds.length) {
+          relatedIds.forEach(function (id) {
+            if (document.getElementById(id)) relatedBox.appendChild(projectLink(id));
+          });
+          relatedWrap.hidden = !relatedBox.children.length;
+        } else {
+          relatedWrap.hidden = true;
+        }
+      }
+    }
+
+    chips.forEach(function (chip) {
+      chip.addEventListener("click", function () { select(chip); });
+      if (!isTouch) {
+        chip.addEventListener("mouseenter", function () {
+          if (!document.querySelector(".tool-chip.active")) select(chip);
+        });
+      }
+      chip.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(chip); }
+      });
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
 })();
 
 

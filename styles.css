@@ -2658,3 +2658,477 @@ ul {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================================================
+   SECTION 03 — SELECTED WORK (Editorial case-study experience)
+   Professional, minimal, recruiter-friendly. No cards grid.
+   ============================================================ */
+.work-section {
+  scroll-margin-top: calc(var(--nav-h) + 16px);
+}
+
+.work-anchor {
+  scroll-margin-top: calc(var(--nav-h) + 16px);
+  height: 0;
+}
+
+/* Small project index */
+.work-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 26px;
+  align-items: center;
+  padding: 14px 0 6px;
+  margin-bottom: 34px;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.work-index-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 9px;
+  padding: 8px 2px;
+  color: var(--text-3);
+  transition: color 0.2s ease;
+}
+
+.work-index-num {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-4);
+  transition: color 0.2s ease;
+}
+
+.work-index-name {
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.work-index-item:hover {
+  color: var(--text-1);
+}
+
+.work-index-item:hover .work-index-num {
+  color: var(--accent);
+}
+
+.work-index-item.active {
+  color: var(--text-1);
+}
+
+.work-index-item.active .work-index-num {
+  color: var(--accent);
+}
+
+/* Work list rhythm */
+.work-list {
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+}
+
+/* Featured project: asymmetric editorial split */
+.work-feature {
+  display: grid;
+  grid-template-columns: 1.12fr 0.88fr;
+  gap: 44px;
+  align-items: center;
+  scroll-margin-top: calc(var(--nav-h) + 20px);
+}
+
+.work-feature .work-visual .project-media {
+  margin: 0;
+  aspect-ratio: 16 / 11;
+  border-radius: var(--radius-lg);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.work-feature .work-visual .project-media:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+}
+
+/* Standard rows: alternating rhythm */
+.work-row {
+  display: grid;
+  grid-template-columns: 0.94fr 1.06fr;
+  gap: 44px;
+  align-items: center;
+  padding-top: 56px;
+  border-top: 1px solid var(--border-subtle);
+  scroll-margin-top: calc(var(--nav-h) + 20px);
+}
+
+.work-row--flip .work-visual {
+  order: 2;
+}
+
+.work-row--flip .work-body {
+  order: 1;
+}
+
+.work-row .work-visual .project-media {
+  margin: 0;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-md);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.work-row .work-visual .project-media:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+}
+
+/* Subtle image treatment: restrained hover depth only */
+.work-visual .project-media:hover .project-media-img {
+  transform: scale(1.03);
+}
+
+.work-category {
+  display: block;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.work-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(1.3rem, 2.2vw, 1.65rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.28;
+  color: var(--text-1);
+  margin-bottom: 12px;
+}
+
+.work-lede {
+  font-size: 0.93rem;
+  color: var(--text-2);
+  line-height: 1.75;
+  margin-bottom: 20px;
+}
+
+/* Progressive disclosure: problem → approach cascade */
+.work-case {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 20px;
+  padding: 18px 0;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.work-case-block {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.work-item.visible .work-case-block:nth-child(1) {
+  transition-delay: 0.12s;
+}
+
+.work-item.visible .work-case-block:nth-child(2) {
+  transition-delay: 0.24s;
+}
+
+.work-item.visible .work-case-block {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.work-case-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-4);
+  margin-bottom: 6px;
+}
+
+.work-case-block p {
+  font-size: 0.86rem;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+/* Narrative bridge into the toolbox */
+.work-transition {
+  margin-top: 64px;
+  padding: 30px 0 6px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.work-transition-text {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-2);
+}
+
+.work-transition-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 10px 18px;
+  border: 1px solid var(--accent-border);
+  background: var(--accent-subtle);
+  border-radius: var(--radius-sm);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.work-transition-link:hover {
+  background: rgba(56, 189, 248, 0.14);
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   SECTION 04 — THE TOOLBOX (Personal engineering toolbox)
+   Curated groups + interactive skill → project explorer.
+   ============================================================ */
+.toolbox-section {
+  scroll-margin-top: calc(var(--nav-h) + 16px);
+}
+
+.toolbox-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 32px;
+  align-items: start;
+}
+
+.toolbox-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.toolbox-group-title {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.toolbox-group-desc {
+  font-size: 0.84rem;
+  color: var(--text-3);
+  margin-bottom: 12px;
+}
+
+.toolbox-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tool-chip {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 8px 15px;
+  border-radius: var(--radius-sm);
+  min-height: 38px;
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease, opacity 0.25s ease, transform 0.18s ease;
+}
+
+.tool-chip:hover {
+  color: var(--text-1);
+  border-color: var(--accent-border);
+  background: var(--accent-subtle);
+  transform: translateY(-1px);
+}
+
+.tool-chip.active {
+  color: var(--accent-light);
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.tool-chip.related-match {
+  border-color: var(--border-strong);
+  color: var(--text-1);
+}
+
+/* Dim unrelated technologies while one is selected */
+.toolbox-groups.has-selection .tool-chip:not(.active):not(.related-match) {
+  opacity: 0.32;
+}
+
+/* Contextual explorer panel */
+.toolbox-panel {
+  position: sticky;
+  top: calc(var(--nav-h) + 20px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.toolbox-panel-kicker {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-4);
+  margin-bottom: 8px;
+}
+
+.toolbox-panel-tech {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--text-1);
+  margin-bottom: 8px;
+}
+
+.toolbox-panel-use {
+  font-size: 0.86rem;
+  color: var(--text-2);
+  line-height: 1.7;
+  margin-bottom: 6px;
+}
+
+.toolbox-panel-block {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.toolbox-panel-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.toolbox-panel-projects {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toolbox-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--text-1);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 8px 13px;
+  border-radius: var(--radius-sm);
+  transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+
+.toolbox-link:hover {
+  color: var(--accent);
+  border-color: var(--accent-border);
+  background: var(--accent-subtle);
+  transform: translateX(2px);
+}
+
+.toolbox-link .arrow-icon {
+  color: var(--accent);
+}
+
+/* Brief highlight ring when jumping from toolbox to a project */
+.work-item.flash-focus {
+  animation: workFlash 1.6s ease;
+}
+
+@keyframes workFlash {
+  0%, 100% { outline: 1px solid transparent; outline-offset: 10px; }
+  25% { outline: 1px solid var(--accent-border); outline-offset: 10px; }
+}
+
+/* ---------- Work + Toolbox responsive ---------- */
+@media (max-width: 960px) {
+  .work-feature,
+  .work-row {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+  .work-row--flip .work-visual {
+    order: 0;
+  }
+  .work-row--flip .work-body {
+    order: 0;
+  }
+  .work-row {
+    padding-top: 48px;
+  }
+  .work-list {
+    gap: 56px;
+  }
+  .toolbox-layout {
+    grid-template-columns: 1fr;
+  }
+  .toolbox-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .work-case {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .work-index {
+    gap: 2px 18px;
+  }
+  .tool-chip {
+    min-height: 42px;
+    padding: 9px 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-case-block {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .work-feature .work-visual .project-media:hover,
+  .work-row .work-visual .project-media:hover,
+  .tool-chip:hover,
+  .toolbox-link:hover,
+  .work-transition-link:hover {
+    transform: none !important;
+  }
+  .work-item.flash-focus {
+    animation: none !important;
+  }
+}
